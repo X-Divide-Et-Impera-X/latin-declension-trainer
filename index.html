@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Latin Declension Trainer</title>
   <style>
+
     body {
       font-family: Arial, sans-serif;
       background: #f4f4f9;
@@ -39,7 +40,7 @@
       color: white;
     }
     input {
-      padding: 8px;
+      padding: 20px;
       width: 80%;
       margin: 10px 0;
     }
@@ -69,7 +70,8 @@
       border-collapse: collapse;
       min-width: 200px;
       margin: 0 auto;
-      flex: 1 1 calc(33.333% - 40px);
+      flex: 1 1 calc(30% - 40px);
+      font-family: 'Arial', sans-serif;
     }
     #tables-container caption {
       font-weight: bold;
@@ -92,6 +94,25 @@
       font-size: 1em;
       color: #333;
     }
+table {
+}
+
+th, td {
+  border: 2px solid #ffb6c1; /* Pastel pink */
+  border-radius: 10px;
+  padding: 10px;
+  background-color: #f5f5f5;
+}
+
+th {
+  background-color: #d3e7f3; /* Pastel blue */
+  color: #333;
+}
+
+table {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
   </style>
 </head>
 <body>
@@ -105,7 +126,6 @@
 
     <p id="question"></p>
     <input type="text" id="answer" placeholder="Type your answer..." />
-    <button class="submit" onclick="submitAnswer()">Submit</button>
     <p class="feedback" id="feedback"></p>
 
     <button id="toggle" class="choices">Table</button>
