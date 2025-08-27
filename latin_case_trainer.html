@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Latin Declension Trainer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .game {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      width: 100%;
+      height: 100%;
+      text-align: center;
+    }
+    .choices {
+      margin-bottom: 1rem;
+    }
+    .choices button {
+      margin: 5px;
+      padding: 6px 12px;
+      border: 1px solid #aaa;
+      border-radius: 8px;
+      background: #eee;
+      cursor: pointer;
+    }
+    .choices button.active {
+      background: #4caf50;
+      color: white;
+    }
+    input {
+      padding: 8px;
+      width: 80%;
+      margin: 10px 0;
+    }
+    button.submit {
+      padding: 10px 15px;
+      margin-top: 10px;
+      border: none;
+      background: #4caf50;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button.submit:hover {
+      background: #45a049;
+    }
+    .feedback {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+#tables-container {
+  display: flex;
+  gap: 20px;            /* space between tables */
+  margin: 0 auto;
+}
+
+#tables-container table {
+  flex: 0 0 auto;       /* prevent shrinking, keep natural size */
+  border-collapse: collapse;
+  min-width: 200px;     /* ensures table readability */
+  margin: 0 auto;
+}
+
+#tables-container caption {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+#tables-container th,
+#tables-container td {
+  border: 1px solid #444;
+  padding: 6px 10px;
+  margin: 10px;
+  text-align: center;
+}
+
+  </style>
+</head>
+<body>
+  <div class="game">
+    <h2>Latin Declension Trainer</h2>
+
+    <div class="choices" id="choices"></div>
+
+    <p id="question"></p>
+    <input type="text" id="answer" placeholder="Type your answer..." />
+    <button class="submit" onclick="submitAnswer()">Submit</button>
+    <p class="feedback" id="feedback"></p>
+    <button id="toggle" class="choices">Table</button>
+    <div id="tables-container">
+
+    </div>
+  </div>
+  <script>
+    // Declension tables (extendable)
+    const tables = {
+      "1st declension": {
+        gender: "feminine",
+        cases: {
+          nominative: {singular: "a", plural: "ae"},
+          genitive:   {singular: "ae", plural: "arum"},
+          dative:     {singular: "ae", plural: "is"},
+          accusative: {singular: "am", plural: "as"},
+          ablative:   {singular: "a", plural: "is"},
+          vocative:   {singular: "a", plural: "ae"},
+        }
+      },
+      "2nd declension (m)": {
+        gender: "masculine",
+        cases: {
+          nominative: {singular: "us", plural: "i"},
+          genitive:   {singular: "i", plural: "orum"},
+          dative:     {singular: "o", plural: "is"},
+          accusative: {singular: "um", plural: "os"},
+          ablative:   {singular: "o", plural: "is"},
+          vocative:   {singular: "e", plural: "i"},
+        }
+      },
+      "2nd declension (n)": {
+        gender: "neuter",
+        cases: {
+          nominative: {singular: "um", plural: "a"},
+          genitive:   {singular: "i", plural: "orum"},
+          dative:     {singular: "o", plural: "is"},
+          accusative: {singular: "um", plural: "a"},
+          ablative:   {singular: "o", plural: "is"},
+          vocative:   {singular: "um", plural: "a"},
+        }
+      },
+      "3rd declension": {
+        gender: "neuter",
+        cases: {
+          nominative: {singular: "", plural: ["a", "ia"]},
+          genitive:   {singular: "is", plural: ["um", "ium"]},
+          dative:     {singular: "i", plural: "ibus"},
+          accusative: {singular: "", plural: ["a", "ia"]},
+          ablative:   {singular: ["e", "i"], plural: "ibus"},
+          vocative:   {singular:"", plural: ["a", "ia"]}
+        }
+      }
+    };
+
+    let enabled = {};
+    Object.keys(tables).forEach(key => enabled[key] = true);
+
+    let questions = [];
+
+    function generateQuestions() {
+      let qs = [];
+      for (let paradigm in tables) {
+        if (!enabled[paradigm]) continue;
+        let data = tables[paradigm];
+        for (let c in data.cases) {
+          for (let num in data.cases[c]) {
+            qs.push({
+              q: `${paradigm} (${data.gender}): What is the ${c.toUpperCase()} ${num.toUpperCase()} ending?`,
+              a: data.cases[c][num]
+            });
+          }
+        }
+      }
+      return qs;
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function buildChoices() {
+      const container = document.getElementById("choices");
+      container.innerHTML = "";
+      for (let paradigm in tables) {
+        const btn = document.createElement("button");
+        btn.textContent = paradigm;
+        btn.classList.toggle("active", enabled[paradigm]);
+        btn.onclick = () => {
+          enabled[paradigm] = !enabled[paradigm];
+          btn.classList.toggle("active", enabled[paradigm]);
+          resetGame();
+        };
+        container.appendChild(btn);
+      }
+    }
+
+    let currentIndex = 0;
+
+    function resetGame() {
+      questions = generateQuestions();
+      shuffle(questions);
+      currentIndex = 0;
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      if (questions.length === 0) {
+        document.getElementById("question").textContent = "❗ Enable at least one table above.";
+        return;
+      }
+      if (currentIndex < questions.length) {
+        document.getElementById("question").textContent = questions[currentIndex].q;
+        document.getElementById("answer").value = "";
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("answer").focus();
+      } else {
+        document.getElementById("question").textContent = "🎉 You've completed all enabled questions!";
+        document.getElementById("answer").style.display = "none";
+      }
+    }
+
+    function submitAnswer() {
+      let userAnswer = document.getElementById("answer").value.trim().toLowerCase();
+      let correctAnswer = questions[currentIndex].a.toLowerCase();
+
+        function isCorrect(userAnswer, correctAnswer) {
+          if (typeof correctAnswer === "string") return userAnswer === correctAnswer;
+          if (Array.isArray(correctAnswer)) return correct.includes(userAnswer);
+          return false;
+        }
+
+
+      if (isCorrect(userAnswer, correctAnswer)) {
+        document.getElementById("feedback").textContent = `✅ Correct! The answer is ${correctAnswer}`;
+        currentIndex++;
+        setTimeout(loadQuestion, 1000);
+      } else {
+        document.getElementById("feedback").textContent = `❌ Incorrect, try again.`;
+        document.getElementById("answer").value = "";
+      }
+    }
+
+    document.getElementById("answer").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        submitAnswer();
+      }
+    });
+
+    buildChoices();
+    resetGame();
+
+
+    const container = document.getElementById("tables-container");
+    container.style.display = "none";
+
+    function formatValue(value) {
+      if (Array.isArray(value)) {
+        return value.join(" / ");
+      }
+      return value || "—"; // dash for empty
+    }
+
+    for (const [declension, data] of Object.entries(tables)) {
+      const table = document.createElement("table");
+
+      // Caption
+      const caption = document.createElement("caption");
+      caption.textContent = `${declension} (${data.gender})`;
+      table.appendChild(caption);
+
+      // Header
+      const thead = document.createElement("thead");
+      thead.innerHTML = `
+        <tr>
+          <th>Case</th>
+          <th>Singular</th>
+          <th>Plural</th>
+        </tr>
+      `;
+      table.appendChild(thead);
+
+      // Body
+      const tbody = document.createElement("tbody");
+      for (const [caseName, forms] of Object.entries(data.cases)) {
+        const row = document.createElement("tr");
+
+        const caseCell = document.createElement("td");
+        caseCell.textContent = caseName.charAt(0).toUpperCase() + caseName.slice(1);
+        row.appendChild(caseCell);
+
+        const singularCell = document.createElement("td");
+        singularCell.textContent = formatValue(forms.singular);
+        row.appendChild(singularCell);
+
+        const pluralCell = document.createElement("td");
+        pluralCell.textContent = formatValue(forms.plural);
+        row.appendChild(pluralCell);
+
+        tbody.appendChild(row);
+      }
+      table.appendChild(tbody);
+
+      container.appendChild(table);
+    }
+    const toggleBtn = document.getElementById("toggle")
+    let tableToggled = false
+    toggleBtn.addEventListener("click", () => {
+        tableToggled = !tableToggled;
+        if (tableToggled) {
+            container.style.display = "flex";
+        } else {
+            container.style.display = "none";
+        }
+
+    })
+
+  </script>
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
