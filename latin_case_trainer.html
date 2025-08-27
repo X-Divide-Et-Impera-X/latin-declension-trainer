@@ -68,7 +68,7 @@
       border-collapse: collapse;
       min-width: 200px;
       margin: 0 auto;
-      display: none; /* hidden by default, shown if enabled */
+      display: none;
     }
     #tables-container caption {
       font-weight: bold;
@@ -153,6 +153,10 @@
     let reactionTimes = [];
     let questionStartTime = null;
 
+    // counters for correct rate
+    let totalAttempts = 0;
+    let correctAnswers = 0;
+
     function generateQuestions() {
       let qs = [];
       for (let paradigm in tables) {
@@ -212,6 +216,13 @@
       questionStartTime = performance.now();
     }
 
+    function updateStats() {
+      let avg = reactionTimes.length > 0 ? reactionTimes.reduce((a,b)=>a+b,0) / reactionTimes.length : 0;
+      let accuracy = totalAttempts > 0 ? (correctAnswers / totalAttempts * 100).toFixed(1) : "0.0";
+      document.getElementById("stats").textContent = 
+        `Correct rate: ${accuracy}% | Average reaction time: ${(avg/1000).toFixed(2)}s`;
+    }
+
     function submitAnswer() {
       let userAnswer = document.getElementById("answer").value.trim().toLowerCase();
       let correctAnswer = currentQuestion.a;
@@ -222,18 +233,19 @@
         return false;
       }
 
+      totalAttempts++;
       if (isCorrect(userAnswer, correctAnswer)) {
+        correctAnswers++;
         let reactionTime = performance.now() - questionStartTime;
         reactionTimes.push(reactionTime);
-        let avg = reactionTimes.reduce((a,b)=>a+b,0) / reactionTimes.length;
 
         document.getElementById("feedback").textContent = `✅ Correct! (${(reactionTime/1000).toFixed(2)}s)`;
-        document.getElementById("stats").textContent = `Average reaction time: ${(avg/1000).toFixed(2)}s`;
-
+        updateStats();
         setTimeout(loadQuestion, 1000);
       } else {
         document.getElementById("feedback").textContent = `❌ Incorrect, try again.`;
         document.getElementById("answer").value = "";
+        updateStats();
       }
     }
 
