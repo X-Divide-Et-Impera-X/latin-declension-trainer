@@ -11,6 +11,7 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      width: 100vw;
     }
     .game {
       background: white;
@@ -59,16 +60,16 @@
       font-weight: bold;
     }
     #tables-container {
-      display: flex-display;
+      display: flex;
+      flex-wrap: wrap;
       gap: 20px;
       margin: 0 auto;
     }
     #tables-container table {
-      flex: 0 0 auto;
       border-collapse: collapse;
       min-width: 200px;
       margin: 0 auto;
-      grid-template-columns: repeat(3, 1fr);
+      flex: 1 1 calc(33.333% - 40px);
     }
     #tables-container caption {
       font-weight: bold;
