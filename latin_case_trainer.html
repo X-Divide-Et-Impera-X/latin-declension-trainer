@@ -59,7 +59,7 @@
       font-weight: bold;
     }
     #tables-container {
-      display: flex;
+      display: flex-display;
       gap: 20px;
       margin: 0 auto;
     }
@@ -68,6 +68,7 @@
       border-collapse: collapse;
       min-width: 200px;
       margin: 0 auto;
+      grid-template-columns: repeat(3, 1fr);
     }
     #tables-container caption {
       font-weight: bold;
@@ -98,6 +99,9 @@
 
     <div class="choices" id="choices"></div>
 
+    <p id="performance-msg"></p>
+    <p id="stats"></p>
+
     <p id="question"></p>
     <input type="text" id="answer" placeholder="Type your answer..." />
     <button class="submit" onclick="submitAnswer()">Submit</button>
@@ -106,8 +110,7 @@
     <button id="toggle" class="choices">Table</button>
     <div id="tables-container"></div>
 
-    <p id="performance-msg"></p>
-    <p id="stats"></p>
+
   </div>
 
   <script>
@@ -156,7 +159,40 @@
           ablative:   {singular: ["e", "i"], plural: "ibus"},
           vocative:   {singular:"", plural: ["a", "ia"]}
         }
-      }
+      },
+      "4th declension (n)": {
+        gender: "neuter",
+        cases: {
+          nominative: {singular: "u", plural: "ua"},
+          genitive:   {singular: "us", plural: "uum"},
+          dative:     {singular: "u", plural: ["ibus","ubus"]},
+          accusative: {singular: "u", plural: "ua"},
+          ablative:   {singular: "u", plural: ["ibus","ubus"]},
+          vocative:   {singular:"u", plural: "ua"}
+        }
+      },
+      "4th declension (m)": {
+        gender: "masculine",
+        cases: {
+          nominative: {singular: "us", plural: "us"},
+          genitive:   {singular: "us", plural: "uum"},
+          dative:     {singular: ["ui", "u"], plural: ["ibus","ubus"]},
+          accusative: {singular: "um", plural: "us"},
+          ablative:   {singular: "u", plural: ["ibus","ubus"]},
+          vocative:   {singular:"us", plural: "ua"}
+        }
+      },
+      "5th declension (f)": {
+        gender: "feminine",
+        cases: {
+          nominative: {singular: "es", plural: "es"},
+          genitive:   {singular: ["ei", "e"], plural: "erum"},
+          dative:     {singular: ["ei", "e"], plural: "ebus"},
+          accusative: {singular: "em", plural: "es"},
+          ablative:   {singular: "e", plural: "ebus"},
+          vocative:   {singular:"es", plural: "es"}
+        }
+      },
     };
 
     let enabled = {};
