@@ -20,6 +20,7 @@
       width: 100%;
       height: 100%;
       text-align: center;
+      overflow-y: auto;
     }
     .choices {
       margin-bottom: 1rem;
@@ -59,7 +60,6 @@
     }
     #tables-container {
       display: flex;
-      flex-wrap: wrap;
       gap: 20px;
       margin: 0 auto;
     }
@@ -68,7 +68,6 @@
       border-collapse: collapse;
       min-width: 200px;
       margin: 0 auto;
-      display: none;
     }
     #tables-container caption {
       font-weight: bold;
@@ -78,8 +77,18 @@
     #tables-container td {
       border: 1px solid #444;
       padding: 6px 10px;
-      margin: 10px;
       text-align: center;
+    }
+    #performance-msg {
+      margin-top: 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #ff9800;
+    }
+    #stats {
+      margin-top: 10px;
+      font-size: 1em;
+      color: #333;
     }
   </style>
 </head>
@@ -93,11 +102,16 @@
     <input type="text" id="answer" placeholder="Type your answer..." />
     <button class="submit" onclick="submitAnswer()">Submit</button>
     <p class="feedback" id="feedback"></p>
-    <p id="stats"></p>
+
     <button id="toggle" class="choices">Table</button>
     <div id="tables-container"></div>
+
+    <p id="performance-msg"></p>
+    <p id="stats"></p>
   </div>
+
   <script>
+    // Declension tables
     const tables = {
       "1st declension": {
         gender: "feminine",
@@ -148,32 +162,103 @@
     let enabled = {};
     Object.keys(tables).forEach(key => enabled[key] = true);
 
-    let questions = [];
     let currentQuestion = null;
-    let reactionTimes = [];
-    let questionStartTime = null;
-
-    // counters for correct rate
-    let totalAttempts = 0;
+    let questionsAnswered = 0;
     let correctAnswers = 0;
+    let reactionTimes = [];
+    let startTime = Date.now();
 
-    function generateQuestions() {
-      let qs = [];
-      for (let paradigm in tables) {
-        if (!enabled[paradigm]) continue;
-        let data = tables[paradigm];
-        for (let c in data.cases) {
-          for (let num in data.cases[c]) {
-            qs.push({
-              q: `${paradigm} (${data.gender}): What is the ${c.toUpperCase()} ${num.toUpperCase()} ending?`,
-              a: data.cases[c][num],
-              paradigm
-            });
-          }
-        }
+
+
+    // Emoji for each case
+    function caseEmoji(caseName) {
+      switch (caseName.toLowerCase()) {
+        case "nominative": return "👤";   // subject
+        case "genitive":   return "🔑";   // possession
+        case "dative":     return "🎁";   // to/for
+        case "accusative": return "🎯";   // object/goal
+        case "ablative":   return "🛠️🚪";   // by/with/from
+        case "vocative":   return "🗣️";   // calling
+        default: return "❓";
       }
-      return qs;
     }
+    // Emoji for singular vs plural
+    function singularPluralEmoji(num) {
+      switch (num.toLowerCase()) {
+        case "singular": return "1️⃣";
+        case "plural":   return "👥";
+        default: return "❓";
+      }
+    }
+
+
+
+    function getRandomQuestion() {
+      const paradigms = Object.keys(tables).filter(p => enabled[p]);
+      if (paradigms.length === 0) return null;
+
+      const paradigm = paradigms[Math.floor(Math.random() * paradigms.length)];
+      const data = tables[paradigm];
+
+      const caseNames = Object.keys(data.cases);
+      const c = caseNames[Math.floor(Math.random() * caseNames.length)];
+      const num = Math.random() < 0.5 ? "singular" : "plural";
+
+      return {
+        q: `${paradigm} (${data.gender}): What is the ${caseEmoji(c)} ${singularPluralEmoji(num)} ${c.toUpperCase()} ${num.toUpperCase()} ending?`,
+        a: data.cases[c][num]
+      };
+    }
+
+    function loadQuestion() {
+      currentQuestion = getRandomQuestion();
+      if (!currentQuestion) {
+        document.getElementById("question").textContent = "❗ Enable at least one table above.";
+        return;
+      }
+      document.getElementById("question").textContent = currentQuestion.q;
+      document.getElementById("answer").value = "";
+      document.getElementById("feedback").textContent = "";
+      document.getElementById("answer").focus();
+      startTime = Date.now();
+    }
+
+    function isCorrect(userAnswer, correctAnswer) {
+      if (typeof correctAnswer === "string") return userAnswer === correctAnswer;
+      if (Array.isArray(correctAnswer)) return correctAnswer.includes(userAnswer);
+      return false;
+    }
+
+    function submitAnswer() {
+      if (!currentQuestion) return;
+
+      let userAnswer = document.getElementById("answer").value.trim().toLowerCase();
+      let correctAnswer = currentQuestion.a;
+      if (typeof correctAnswer === "string") correctAnswer = correctAnswer.toLowerCase();
+      else correctAnswer = correctAnswer.map(c => c.toLowerCase());
+
+      const timeTaken = (Date.now() - startTime) / 1000;
+      questionsAnswered++;
+
+      if (isCorrect(userAnswer, correctAnswer)) {
+        document.getElementById("feedback").textContent = `✅ Correct!`;
+        correctAnswers++;
+        reactionTimes.push(timeTaken);
+        setTimeout(loadQuestion, 800);
+      } else {
+        document.getElementById("feedback").textContent = `❌ Incorrect, try again.`;
+        document.getElementById("answer").value = "";
+        return;
+      }
+
+      updatePerformanceMsg();
+    }
+
+    document.getElementById("answer").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        submitAnswer();
+      }
+    });
 
     function buildChoices() {
       const container = document.getElementById("choices");
@@ -185,79 +270,52 @@
         btn.onclick = () => {
           enabled[paradigm] = !enabled[paradigm];
           btn.classList.toggle("active", enabled[paradigm]);
-          questions = generateQuestions();
-          updateTableVisibility();
           loadQuestion();
         };
         container.appendChild(btn);
       }
     }
 
-    function updateTableVisibility() {
-      for (let paradigm in tables) {
-        const table = document.getElementById(`table-${paradigm}`);
-        if (!table) continue;
-        table.style.display = enabled[paradigm] && tableToggled ? "table" : "none";
+    function updatePerformanceMsg() {
+      let msg = "";
+      let statsMsg = "";
+      if (questionsAnswered > 0) {
+        const correctRate = (correctAnswers / questionsAnswered) * 100;
+        const avgTime = reactionTimes.reduce((a,b)=>a+b,0) / reactionTimes.length;
+
+        statsMsg = `Correct rate: ${correctRate.toFixed(1)}% | Avg. reaction time: ${avgTime.toFixed(2)}s`;
+
+        if (correctRate >= 100 && avgTime < 2) {
+          msg = "💯 Accuracy Master! Perfect score!";
+        } 
+        else if (correctRate >= 95) {
+          msg = "🌟 You're doing great!";
+        } 
+        else if (correctRate >= 90) {
+          msg = "✅ Excellent accuracy!";
+        } 
+        else if (correctRate >= 80) {
+          msg = "👍 Solid work, keep pushing!";
+        } 
+        else if (correctRate < 50) {
+          msg = "📘 Don’t worry, keep practicing!";
+        }
+
+        if (avgTime < 1.5) {
+          msg += " ⚡ Lightning fast!";
+        } 
+        else if (avgTime < 3) {
+          msg += " ⏱️ Good pace!";
+        } 
+        else if (avgTime > 5) {
+          msg += " 🌱 Steady progress, keep focusing!";
+        }
       }
+      document.getElementById("performance-msg").textContent = msg;
+      document.getElementById("stats").textContent = statsMsg;
     }
 
-    function loadQuestion() {
-      questions = generateQuestions();
-      if (questions.length === 0) {
-        document.getElementById("question").textContent = "❗ Enable at least one table above.";
-        return;
-      }
-      currentQuestion = questions[Math.floor(Math.random() * questions.length)];
-      document.getElementById("question").textContent = currentQuestion.q;
-      document.getElementById("answer").value = "";
-      document.getElementById("feedback").textContent = "";
-      document.getElementById("answer").style.display = "inline";
-      document.getElementById("answer").focus();
-      questionStartTime = performance.now();
-    }
-
-    function updateStats() {
-      let avg = reactionTimes.length > 0 ? reactionTimes.reduce((a,b)=>a+b,0) / reactionTimes.length : 0;
-      let accuracy = totalAttempts > 0 ? (correctAnswers / totalAttempts * 100).toFixed(1) : "0.0";
-      document.getElementById("stats").textContent = 
-        `Correct rate: ${accuracy}% | Average reaction time: ${(avg/1000).toFixed(2)}s`;
-    }
-
-    function submitAnswer() {
-      let userAnswer = document.getElementById("answer").value.trim().toLowerCase();
-      let correctAnswer = currentQuestion.a;
-
-      function isCorrect(userAnswer, correctAnswer) {
-        if (typeof correctAnswer === "string") return userAnswer === correctAnswer;
-        if (Array.isArray(correctAnswer)) return correctAnswer.includes(userAnswer);
-        return false;
-      }
-
-      totalAttempts++;
-      if (isCorrect(userAnswer, correctAnswer)) {
-        correctAnswers++;
-        let reactionTime = performance.now() - questionStartTime;
-        reactionTimes.push(reactionTime);
-
-        document.getElementById("feedback").textContent = `✅ Correct! (${(reactionTime/1000).toFixed(2)}s)`;
-        updateStats();
-        setTimeout(loadQuestion, 1000);
-      } else {
-        document.getElementById("feedback").textContent = `❌ Incorrect, try again.`;
-        document.getElementById("answer").value = "";
-        updateStats();
-      }
-    }
-
-    document.getElementById("answer").addEventListener("keypress", function(e) {
-      if (e.key === "Enter") {
-        submitAnswer();
-      }
-    });
-
-    buildChoices();
-    loadQuestion();
-
+    // build declension tables
     const container = document.getElementById("tables-container");
     container.style.display = "none";
 
@@ -270,7 +328,6 @@
 
     for (const [declension, data] of Object.entries(tables)) {
       const table = document.createElement("table");
-      table.id = `table-${declension}`;
 
       const caption = document.createElement("caption");
       caption.textContent = `${declension} (${data.gender})`;
@@ -314,10 +371,10 @@
     toggleBtn.addEventListener("click", () => {
         tableToggled = !tableToggled;
         container.style.display = tableToggled ? "flex" : "none";
-        updateTableVisibility();
-    })
+    });
 
-    updateTableVisibility();
+    buildChoices();
+    loadQuestion();
   </script>
 </body>
 </html>
