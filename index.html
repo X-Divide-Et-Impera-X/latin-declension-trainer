@@ -126,6 +126,7 @@ table {
     <p id="stats"></p>
 
     <p id="question"></p>
+    <p id="example"></p>
     <input type="text" id="answer" placeholder="Type your answer..." />
     <p class="feedback" id="feedback"></p>
 
@@ -137,85 +138,227 @@ table {
 
   <script>
     // Declension tables
-    const tables = {
-      "1st declension": {
-        gender: "feminine",
-        cases: {
-          nominative: {singular: "a", plural: "ae"},
-          genitive:   {singular: "ae", plural: "arum"},
-          dative:     {singular: "ae", plural: "is"},
-          accusative: {singular: "am", plural: "as"},
-          ablative:   {singular: "a", plural: "is"},
-          vocative:   {singular: "a", plural: "ae"},
-        }
-      },
-      "2nd declension (m)": {
-        gender: "masculine",
-        cases: {
-          nominative: {singular: "us", plural: "i"},
-          genitive:   {singular: "i", plural: "orum"},
-          dative:     {singular: "o", plural: "is"},
-          accusative: {singular: "um", plural: "os"},
-          ablative:   {singular: "o", plural: "is"},
-          vocative:   {singular: "e", plural: "i"},
-        }
-      },
-      "2nd declension (n)": {
-        gender: "neuter",
-        cases: {
-          nominative: {singular: "um", plural: "a"},
-          genitive:   {singular: "i", plural: "orum"},
-          dative:     {singular: "o", plural: "is"},
-          accusative: {singular: "um", plural: "a"},
-          ablative:   {singular: "o", plural: "is"},
-          vocative:   {singular: "um", plural: "a"},
-        }
-      },
-      "3rd declension": {
-        gender: "neuter",
-        cases: {
-          nominative: {singular: "", plural: ["a", "ia"]},
-          genitive:   {singular: "is", plural: ["um", "ium"]},
-          dative:     {singular: "i", plural: "ibus"},
-          accusative: {singular: "", plural: ["a", "ia"]},
-          ablative:   {singular: ["e", "i"], plural: "ibus"},
-          vocative:   {singular:"", plural: ["a", "ia"]}
-        }
-      },
-      "4th declension (n)": {
-        gender: "neuter",
-        cases: {
-          nominative: {singular: "u", plural: "ua"},
-          genitive:   {singular: "us", plural: "uum"},
-          dative:     {singular: "u", plural: ["ibus","ubus"]},
-          accusative: {singular: "u", plural: "ua"},
-          ablative:   {singular: "u", plural: ["ibus","ubus"]},
-          vocative:   {singular:"u", plural: "ua"}
-        }
-      },
-      "4th declension (m)": {
-        gender: "masculine",
-        cases: {
-          nominative: {singular: "us", plural: "us"},
-          genitive:   {singular: "us", plural: "uum"},
-          dative:     {singular: ["ui", "u"], plural: ["ibus","ubus"]},
-          accusative: {singular: "um", plural: "us"},
-          ablative:   {singular: "u", plural: ["ibus","ubus"]},
-          vocative:   {singular:"us", plural: "ua"}
-        }
-      },
-      "5th declension (f)": {
-        gender: "feminine",
-        cases: {
-          nominative: {singular: "es", plural: "es"},
-          genitive:   {singular: ["ei", "e"], plural: "erum"},
-          dative:     {singular: ["ei", "e"], plural: "ebus"},
-          accusative: {singular: "em", plural: "es"},
-          ablative:   {singular: "e", plural: "ebus"},
-          vocative:   {singular:"es", plural: "es"}
-        }
-      },
-    };
+const tables = {
+  "1st declension": {
+    gender: "feminine",
+    cases: {
+      nominative: {singular: "a",
+                   plural: "ae"},
+      genitive:   {singular: "ae",
+                   plural: "arum"},
+      dative:     {singular: "ae",
+                   plural: "is"},
+      accusative: {singular: "am",
+                   plural: "as"},
+      ablative:   {singular: "a",
+                   plural: "is"},
+      vocative:   {singular: "a",
+                   plural: "ae"},
+    },
+    examples: {
+      nominative: {singular: "Puella cantat – The girl sings",
+                   plural: "Puellae cantant – The girls sing"},
+      genitive:   {singular: "Liber puellae – The book of the girl",
+                   plural: "Libri puellarum – The books of the girls"},
+      dative:     {singular: "Do librum puellae – I give the book to the girl",
+                   plural: "Do libros puellis – I give the books to the girls"},
+      accusative: {singular: "Video puellam – I see the girl",
+                   plural: "Video puellas – I see the girls"},
+      ablative:   {singular: "Cum puella ambulo – I walk with the girl",
+                   plural: "Cum puellis ambulo – I walk with the girls"},
+      vocative:   {singular: "Puella, veni! – O girl, come!",
+                   plural: "Puellae, venite! – O girls, come!"},
+    }
+  },
+  "2nd declension (m)": {
+    gender: "masculine",
+    cases: {
+      nominative: {singular: "us",
+                   plural: "i"},
+      genitive:   {singular: "i",
+                   plural: "orum"},
+      dative:     {singular: "o",
+                   plural: "is"},
+      accusative: {singular: "um",
+                   plural: "os"},
+      ablative:   {singular: "o",
+                   plural: "is"},
+      vocative:   {singular: "e",
+                   plural: "i"},
+    },
+    examples: {
+      nominative: {singular: "Servus laborat – The slave works",
+                   plural: "Servi laborant – The slaves work"},
+      genitive:   {singular: "Domus servi – The house of the slave",
+                   plural: "Domus servorum – The houses of the slaves"},
+      dative:     {singular: "Donum servo do – I give a gift to the slave",
+                   plural: "Dona servis do – I give gifts to the slaves"},
+      accusative: {singular: "Video servum – I see the slave",
+                   plural: "Video servos – I see the slaves"},
+      ablative:   {singular: "Cum servo ambulo – I walk with the slave",
+                   plural: "Cum servis ambulo – I walk with the slaves"},
+      vocative:   {singular: "Serve, veni! – O slave, come!",
+                   plural: "Servi, venite! – O slaves, come!"},
+    }
+  },
+  "2nd declension (n)": {
+    gender: "neuter",
+    cases: {
+      nominative: {singular: "um",
+                   plural: "a"},
+      genitive:   {singular: "i",
+                   plural: "orum"},
+      dative:     {singular: "o",
+                   plural: "is"},
+      accusative: {singular: "um",
+                   plural: "a"},
+      ablative:   {singular: "o",
+                   plural: "is"},
+      vocative:   {singular: "um",
+                   plural: "a"},
+    },
+    examples: {
+      nominative: {singular: "Bellum longum est – The war is long",
+                   plural: "Bella longa sunt – The wars are long"},
+      genitive:   {singular: "Causa belli – The cause of the war",
+                   plural: "Causae bellorum – The causes of the wars"},
+      dative:     {singular: "Signum bello do – I give a signal to the war",
+                   plural: "Signa bellis do – I give signals to the wars"},
+      accusative: {singular: "Video bellum – I see the war",
+                   plural: "Video bella – I see the wars"},
+      ablative:   {singular: "Cum bello pugno – I fight with the war",
+                   plural: "Cum bellis pugno – I fight with the wars"},
+      vocative:   {singular: "Bellum, veniat finis! – O war, may the end come!",
+                   plural: "Bella, veniatis! – O wars, may you come!"},
+    }
+  },
+  "3rd declension": {
+    gender: "neuter",
+    cases: {
+      nominative: {singular: "",
+                   plural: ["a", "ia"]},
+      genitive:   {singular: "is",
+                   plural: ["um", "ium"]},
+      dative:     {singular: "i",
+                   plural: "ibus"},
+      accusative: {singular: "",
+                   plural: ["a", "ia"]},
+      ablative:   {singular: ["e", "i"],
+                   plural: "ibus"},
+      vocative:   {singular:"",
+                   plural: ["a", "ia"]}
+    },
+    examples: {
+      nominative: {singular: "Nomen est Marcus – The name is Marcus",
+                   plural: "Nomina sunt multa – The names are many"},
+      genitive:   {singular: "Pars nominis – Part of the name",
+                   plural: "Partes nominum – Parts of the names"},
+      dative:     {singular: "Fidem nomini do – I give trust to the name",
+                   plural: "Fidem nominibus do – I give trust to the names"},
+      accusative: {singular: "Nomen audio – I hear the name",
+                   plural: "Nomina audio – I hear the names"},
+      ablative:   {singular: "Cum nomine venio – I come with the name",
+                   plural: "Cum nominibus venio – I come with the names"},
+      vocative:   {singular: "Nomen, nota! – O name, be known!",
+                   plural: "Nomina, notamini! – O names, be known!"},
+    }
+  },
+  "4th declension (n)": {
+    gender: "neuter",
+    cases: {
+      nominative: {singular: "u",
+                   plural: "ua"},
+      genitive:   {singular: "us",
+                   plural: "uum"},
+      dative:     {singular: "u",
+                   plural: ["ibus","ubus"]},
+      accusative: {singular: "u",
+                   plural: "ua"},
+      ablative:   {singular: "u",
+                   plural: ["ibus","ubus"]},
+      vocative:   {singular:"u",
+                   plural: "ua"}
+    },
+
+    examples: {
+      nominative: {singular: "Cornu longum est – The horn is long",
+                   plural: "Cornua longa sunt – The horns are long"},
+      genitive:   {singular: "Sonus cornuus – The sound of the horn",
+                   plural: "Sonus cornuum – The sounds of the horns"},
+      dative:     {singular: "Donum cornu do – I give a gift to the horn",
+                   plural: "Dona cornibus do – I give gifts to the horns"},
+      accusative: {singular: "Cornu video – I see the horn",
+                   plural: "Cornua video – I see the horns"},
+      ablative:   {singular: "Cum cornu cano – I sing with the horn",
+                   plural: "Cum cornibus cano – I sing with the horns"},
+      vocative:   {singular: "Cornu, cane! – O horn, sing!",
+                   plural: "Cornua, canite! – O horns, sing!"},
+    }
+  },
+  "4th declension (m)": {
+    gender: "masculine",
+    cases: {
+      nominative: {singular: "us",
+                   plural: "us"},
+      genitive:   {singular: "us",
+                   plural: "uum"},
+      dative:     {singular: ["ui", "u"],
+                   plural: ["ibus","ubus"]},
+      accusative: {singular: "um",
+                   plural: "us"},
+      ablative:   {singular: "u",
+                   plural: ["ibus","ubus"]},
+      vocative:   {singular:"us",
+                   plural: "us"}
+    },
+    examples: {
+      nominative: {singular: "Fructus dulcis est – The fruit is sweet",
+                   plural: "Fructus dulces sunt – The fruits are sweet"},
+      genitive:   {singular: "Sapor fructus – The taste of the fruit",
+                   plural: "Sapores fructuum – The tastes of the fruits"},
+      dative:     {singular: "Donum fructui do – I give a gift to the fruit",
+                   plural: "Dona fructibus do – I give gifts to the fruits"},
+      accusative: {singular: "Fructum edo – I eat the fruit",
+                   plural: "Fructus edo – I eat the fruits"},
+      ablative:   {singular: "Cum fructu venio – I come with the fruit",
+                   plural: "Cum fructibus venio – I come with the fruits"},
+      vocative:   {singular: "Fructus, cresce! – O fruit, grow!",
+                   plural: "Fructus, crescite! – O fruits, grow!"},
+    }
+  },
+  "5th declension (f)": {
+    gender: "feminine",
+    cases: {
+      nominative: {singular: "es",
+                   plural: "es"},
+      genitive:   {singular: ["ei", "e"],
+                   plural: "erum"},
+      dative:     {singular: ["ei", "e"],
+                   plural: "ebus"},
+      accusative: {singular: "em",
+                   plural: "es"},
+      ablative:   {singular: "e",
+                   plural: "ebus"},
+      vocative:   {singular:"es",
+                   plural: "es"}
+    },
+    examples: {
+      nominative: {singular: "Res magna est – The thing is great",
+                   plural: "Res magnae sunt – The things are great"},
+      genitive:   {singular: "Causa rei – The cause of the thing",
+                   plural: "Causae rerum – The causes of the things"},
+      dative:     {singular: "Fidem rei do – I give trust to the thing",
+                   plural: "Fidem rebus do – I give trust to the things"},
+      accusative: {singular: "Rem video – I see the thing",
+                   plural: "Res video – I see the things"},
+      ablative:   {singular: "Cum re venio – I come with the thing",
+                   plural: "Cum rebus venio – I come with the things"},
+      vocative:   {singular: "Res, appare! – O thing, appear!",
+                   plural: "Res, apparite! – O things, appear!"},
+    }
+  },
+};
+
 
     let enabled = {};
     Object.keys(tables).forEach(key => enabled[key] = true);
@@ -264,7 +407,8 @@ table {
 
       return {
         q: `${paradigm} (${data.gender}): What is the ${caseEmoji(c)} ${singularPluralEmoji(num)} ${c.toUpperCase()} ${num.toUpperCase()} ending?`,
-        a: data.cases[c][num]
+        a: data.cases[c][num],
+        e: data.examples[c][num],
       };
     }
 
@@ -275,6 +419,7 @@ table {
         return;
       }
       document.getElementById("question").textContent = currentQuestion.q;
+      document.getElementById("example").textContent = currentQuestion.e;
       document.getElementById("answer").value = "";
       document.getElementById("feedback").textContent = "";
       document.getElementById("answer").focus();
