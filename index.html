@@ -386,7 +386,6 @@ const tables = {
         dative:     {singular: "tibi", plural: "vobis"},
         accusative: {singular: "te", plural: "vos"},
         ablative:   {singular: "te", plural: "vobis"},
-        vocative:   {singular: "tu", plural: "vos"}
       },
       examples: {
         nominative: {singular: "Tu cantas – You sing",
@@ -399,8 +398,6 @@ const tables = {
                      plural: "Magister vos laudat – The teacher praises you all"},
         ablative:   {singular: "Cum te ambulat – He walks with you",
                      plural: "Cum vobis ambulat – He walks with you all"},
-        vocative:   {singular: "Tu, veni! – You, come!",
-                     plural: "Vos, venite! – You all, come!"}
       }
     },
     "3rd person pronoun (masculine)": {
@@ -638,7 +635,7 @@ const tables = {
       if (Array.isArray(value)) {
         return value.join(" / ");
       }
-      return value || "—";
+      return value || "(varies)";
     }
 
     for (const [declension, data] of Object.entries(tables)) {
