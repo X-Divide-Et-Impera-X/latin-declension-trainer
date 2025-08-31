@@ -120,6 +120,8 @@ table {
   <div class="game">
     <h2>Latin Declension Trainer</h2>
 
+    <p id="goals">Get each declension correct 300 times, after that, add other declensions and repeat until you get everything right quickly</p> 
+
     <div class="choices" id="choices"></div>
 
     <p id="performance-msg"></p>
@@ -139,8 +141,7 @@ table {
   <script>
     // Declension tables
 const tables = {
-  "1st declension": {
-    gender: "feminine",
+  "1st declension (feminine)": {
     cases: {
       nominative: {singular: "a",
                    plural: "ae"},
@@ -171,7 +172,6 @@ const tables = {
     }
   },
   "2nd declension (m)": {
-    gender: "masculine",
     cases: {
       nominative: {singular: "us",
                    plural: "i"},
@@ -201,8 +201,7 @@ const tables = {
                    plural: "Servi, venite! – O slaves, come!"},
     }
   },
-  "2nd declension (n)": {
-    gender: "neuter",
+  "2nd declension (neuter)": {
     cases: {
       nominative: {singular: "um",
                    plural: "a"},
@@ -232,8 +231,7 @@ const tables = {
                    plural: "Bella, veniatis! – O wars, may you come!"},
     }
   },
-  "3rd declension": {
-    gender: "neuter",
+  "3rd declension (neuter)": {
     cases: {
       nominative: {singular: "",
                    plural: ["a", "ia"]},
@@ -263,8 +261,7 @@ const tables = {
                    plural: "Nomina, notamini! – O names, be known!"},
     }
   },
-  "4th declension (n)": {
-    gender: "neuter",
+  "4th declension (neuter)": {
     cases: {
       nominative: {singular: "u",
                    plural: "ua"},
@@ -295,8 +292,7 @@ const tables = {
                    plural: "Cornua, canite! – O horns, sing!"},
     }
   },
-  "4th declension (m)": {
-    gender: "masculine",
+  "4th declension (masculine)": {
     cases: {
       nominative: {singular: "us",
                    plural: "us"},
@@ -326,8 +322,7 @@ const tables = {
                    plural: "Fructus, crescite! – O fruits, grow!"},
     }
   },
-  "5th declension (f)": {
-    gender: "feminine",
+  "5th declension (feminine)": {
     cases: {
       nominative: {singular: "es",
                    plural: "es"},
@@ -357,6 +352,123 @@ const tables = {
                    plural: "Res, apparite! – O things, appear!"},
     }
   },
+    "1st person pronoun": {
+      gender: "common (applies to all genders)",
+      cases: {
+        nominative: {singular: "ego", 
+                     plural: "nos"},
+        genitive:   {singular: "mei", 
+                     plural: "nostrum / nostri"},
+        dative:     {singular: "mihi", 
+                     plural: "nobis"},
+        accusative: {singular: "me", 
+                     plural: "nos"},
+        ablative:   {singular: "me", 
+                     plural: "nobis"},
+      },
+      examples: {
+        nominative: {singular: "Ego cantō – I sing",
+                     plural: "Nōs cantāmus – We sing"},
+        genitive:   {singular: "Liber meī est – The book is mine / The book of me",
+                     plural: "Liber nōstrum est – The book is ours"},
+        dative:     {singular: "Amīcus mihi librum dat – A friend gives a book to me",
+                     plural: "Amīcus nōbīs librōs dat – A friend gives books to us"},
+        accusative: {singular: "Magister mē laudat – The teacher praises me",
+                     plural: "Magister nōs laudat – The teacher praises us"},
+        ablative:   {singular: "Cum mē ambulat – He walks with me",
+                     plural: "Cum nōbīs ambulat – He walks with us"},
+      }
+    },
+    "2nd person pronoun": {
+      cases: {
+        nominative: {singular: "tu", plural: "vos"},
+        genitive:   {singular: "tui", plural: "vestrum / vestri"},
+        dative:     {singular: "tibi", plural: "vobis"},
+        accusative: {singular: "te", plural: "vos"},
+        ablative:   {singular: "te", plural: "vobis"},
+        vocative:   {singular: "tu", plural: "vos"}
+      },
+      examples: {
+        nominative: {singular: "Tu cantas – You sing",
+                     plural: "Vos cantatis – You (all) sing"},
+        genitive:   {singular: "Liber tui est – The book is yours",
+                     plural: "Liber vestrum est – The book is yours (plural)"},
+        dative:     {singular: "Amicus tibi librum dat – A friend gives a book to you",
+                     plural: "Amicus vobis libros dat – A friend gives books to you all"},
+        accusative: {singular: "Magister te laudat – The teacher praises you",
+                     plural: "Magister vos laudat – The teacher praises you all"},
+        ablative:   {singular: "Cum te ambulat – He walks with you",
+                     plural: "Cum vobis ambulat – He walks with you all"},
+        vocative:   {singular: "Tu, veni! – You, come!",
+                     plural: "Vos, venite! – You all, come!"}
+      }
+    },
+    "3rd person pronoun (masculine)": {
+      cases: {
+        nominative: {singular: "is", plural: "ei"},
+        genitive:   {singular: "eius", plural: "eorum"},
+        dative:     {singular: "ei", plural: "eis"},
+        accusative: {singular: "eum", plural: "eos"},
+        ablative:   {singular: "eo", plural: "eis"},
+      },
+      examples: {
+        nominative: {singular: "Is venit – He comes",
+                     plural: "Ei veniunt – They (m.) come"},
+        genitive:   {singular: "Liber eius est – The book is his",
+                     plural: "Liber eorum est – The book is theirs"},
+        dative:     {singular: "Amicus ei librum dat – A friend gives a book to him",
+                     plural: "Amicus eis libros dat – A friend gives books to them"},
+        accusative: {singular: "Magister eum laudat – The teacher praises him",
+                     plural: "Magister eos laudat – The teacher praises them"},
+        ablative:   {singular: "Cum eo ambulat – He walks with him",
+                     plural: "Cum eis ambulat – He walks with them"},
+      }
+    },
+
+    "3rd person pronoun (feminine)": {
+      cases: {
+        nominative: {singular: "ea", plural: "eae"},
+        genitive:   {singular: "eius", plural: "earum"},
+        dative:     {singular: "ei", plural: "eis"},
+        accusative: {singular: "eam", plural: "eas"},
+        ablative:   {singular: "ea", plural: "eis"},
+      },
+      examples: {
+        nominative: {singular: "Ea venit – She comes",
+                     plural: "Eae veniunt – They (f.) come"},
+        genitive:   {singular: "Liber eius est – The book is hers",
+                     plural: "Liber earum est – The book is theirs"},
+        dative:     {singular: "Amicus ei librum dat – A friend gives a book to her",
+                     plural: "Amicus eis libros dat – A friend gives books to them"},
+        accusative: {singular: "Magister eam laudat – The teacher praises her",
+                     plural: "Magister eas laudat – The teacher praises them"},
+        ablative:   {singular: "Cum ea ambulat – He walks with her",
+                     plural: "Cum eis ambulat – He walks with them"},
+      }
+    },
+
+    "3rd person pronoun (neuter)": {
+      cases: {
+        nominative: {singular: "id", plural: "ea"},
+        genitive:   {singular: "eius", plural: "eorum"},
+        dative:     {singular: "ei", plural: "eis"},
+        accusative: {singular: "id", plural: "ea"},
+        ablative:   {singular: "eo", plural: "eis"},
+      },
+      examples: {
+        nominative: {singular: "Id venit – It comes",
+                     plural: "Ea veniunt – They (n.) come"},
+        genitive:   {singular: "Liber eius est – The book is its",
+                     plural: "Liber eorum est – The book is theirs"},
+        dative:     {singular: "Amicus ei librum dat – A friend gives a book to it",
+                     plural: "Amicus eis libros dat – A friend gives books to them"},
+        accusative: {singular: "Magister id laudat – The teacher praises it",
+                     plural: "Magister ea laudat – The teacher praises them"},
+        ablative:   {singular: "Cum eo ambulat – He walks with it",
+                     plural: "Cum eis ambulat – He walks with them"},
+      }
+    },
+
 };
 
 
@@ -406,7 +518,7 @@ const tables = {
       const num = Math.random() < 0.5 ? "singular" : "plural";
 
       return {
-        q: `${paradigm} (${data.gender}): What is the ${caseEmoji(c)} ${singularPluralEmoji(num)} ${c.toUpperCase()} ${num.toUpperCase()} ending?`,
+        q: `${paradigm} : What is the ${caseEmoji(c)} ${singularPluralEmoji(num)} ${c.toUpperCase()} ${num.toUpperCase()} ending?`,
         a: data.cases[c][num],
         e: data.examples[c][num],
       };
@@ -486,9 +598,9 @@ const tables = {
         const correctRate = (correctAnswers / questionsAnswered) * 100;
         const avgTime = reactionTimes.reduce((a,b)=>a+b,0) / reactionTimes.length;
 
-        statsMsg = `Correct rate: ${correctRate.toFixed(1)}% | Avg. reaction time: ${avgTime.toFixed(2)}s`;
+        statsMsg = `You have answered ${correctAnswers} questions correctly | Correct rate: ${correctRate.toFixed(1)}% | Avg. reaction time: ${avgTime.toFixed(2)}s`;
 
-        if (correctRate >= 100 && avgTime < 2) {
+        if (correctRate >= 100 && avgTime < 5) {
           msg = "💯 Accuracy Master! Perfect score!";
         } 
         else if (correctRate >= 95) {
@@ -533,7 +645,7 @@ const tables = {
       const table = document.createElement("table");
 
       const caption = document.createElement("caption");
-      caption.textContent = `${declension} (${data.gender})`;
+      caption.textContent = declension;
       table.appendChild(caption);
 
       const thead = document.createElement("thead");
